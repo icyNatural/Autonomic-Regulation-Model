@@ -1,0 +1,6 @@
+{
+  "name": "Autonomic Regulation Model",
+  "description": "A neutral model describing how the body balances mobilization and restoration through autonomic processes, and how inputs like breathing, rhythm, and cognition influence that balance.",
+  "version": "1.0.0",
+  "type": "module"
+}
