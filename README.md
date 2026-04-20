@@ -1,5 +1,8 @@
 # Autonomic Regulation Model
 
+🔗 **View the interactive model:**  
+https://icynatural.github.io/Autonomic-Regulation-Model/
+
 A neutral model describing how the body balances mobilization and restoration through autonomic processes, and how inputs like breathing, rhythm, and cognition influence that balance.
 
 ## Structure
