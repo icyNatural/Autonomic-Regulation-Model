@@ -435,6 +435,9 @@
               <span class="dot dot-para"></span>
               Restoration supports maintenance, repair, and internal balance
             </div>
+            <div class="note" style="margin-top:16px; color:rgba(180,230,245,.88);">
+              Values are not inversely linked. Both processes remain active and vary independently.
+            </div>
           </div>
         </article>
 
@@ -457,6 +460,17 @@
             <li>Breathing tends to become slower and more rhythmic</li>
             <li>Heart rate variability often increases</li>
             <li>Supports digestion, repair, and systemic balance</li>
+          </ul>
+        </article>
+
+        <article class="card span-4">
+          <h3>Example States</h3>
+          <p class="mini">Two Sliders, Not a Seesaw</p>
+          <ul>
+            <li><strong>Calm focus</strong> — Sympathetic: 60 / Parasympathetic: 65</li>
+            <li><strong>Stress</strong> — Sympathetic: 90 / Parasympathetic: 20</li>
+            <li><strong>Recovery</strong> — Sympathetic: 25 / Parasympathetic: 85</li>
+            <li><strong>Dysregulation</strong> — Sympathetic: 80 / Parasympathetic: 30</li>
           </ul>
         </article>
 
@@ -513,31 +527,45 @@
           <p class="observation">
             Autonomic regulation is a continuous balancing process influenced by internal rhythms, external inputs, and cognitive activity.
           </p>
+<<<<<<< HEAD
           <p class="footer-note">
            This model describes regulation as a continuous adjustment, not a fixed state.
           </p>
+=======
+>>>>>>> 2af671c (Refine regulation model states and remove repo note)
         </article>
       </div>
     </section>
   </main>
 
-  <script>
+    <script>
     (function () {
       const sym = document.querySelector(".fill-sym");
       const para = document.querySelector(".fill-para");
       if (!sym || !para) return;
 
-      let t = 0;
-      function animateBars() {
-        t += 0.015;
-        const symValue = 58 + Math.sin(t) * 8;
-        const paraValue = 68 + Math.cos(t * 0.9) * 7;
-        sym.style.width = symValue + "%";
-        para.style.width = paraValue + "%";
-        requestAnimationFrame(animateBars);
+      const states = [
+        { label: "Stress", sym: 90, para: 20 },
+        { label: "Calm focus", sym: 60, para: 65 },
+        { label: "Recovery", sym: 25, para: 85 },
+        { label: "Dysregulation", sym: 80, para: 30 }
+      ];
+
+      let i = 0;
+
+      function applyState(state) {
+        sym.style.width = state.sym + "%";
+        para.style.width = state.para + "%";
       }
-      animateBars();
+
+      applyState(states[0]);
+
+      setInterval(() => {
+        i = (i + 1) % states.length;
+        applyState(states[i]);
+      }, 3000);
     })();
   </script>
 </body>
 </html>
+
