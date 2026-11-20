@@ -352,6 +352,55 @@
 
     a:hover{opacity:.9}
 
+    .state-controls{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      margin-top:14px;
+    }
+
+    .state-btn{
+      appearance:none;
+      border:1px solid rgba(91,226,255,.22);
+      background:rgba(10,27,40,.75);
+      color:#dff9ff;
+      border-radius:999px;
+      padding:6px 12px;
+      font-size:.82rem;
+      cursor:pointer;
+      transition:background .15s ease, border-color .15s ease;
+    }
+
+    .state-btn:hover,
+    .state-btn:focus-visible{
+      border-color:var(--cyan);
+      outline:none;
+    }
+
+    .state-btn[aria-pressed="true"]{
+      background:rgba(103,228,255,.22);
+      border-color:var(--cyan);
+      color:#ffffff;
+      font-weight:600;
+    }
+
+    .illus-tag{
+      display:inline-block;
+      padding:2px 8px;
+      border-radius:999px;
+      font-size:.74rem;
+      letter-spacing:.04em;
+      text-transform:uppercase;
+      background:rgba(103,228,255,.12);
+      border:1px solid rgba(103,228,255,.25);
+      color:rgba(198,238,255,.9);
+    }
+
+    @media (prefers-reduced-motion: reduce){
+      .badge-dot, .fill::after{animation:none}
+      .card{transition:none}
+    }
+
     @keyframes pulse{
       0%,100%{transform:scale(1);opacity:.9}
       50%{transform:scale(1.18);opacity:1}
@@ -402,14 +451,14 @@
 
           <div class="balance">
             <div class="balance-head">
-              <span>Relative Influence</span>
-              <span>Dynamic, not binary</span>
+              <span>Relative Influence — <strong id="state-label">Stress</strong></span>
+              <span class="illus-tag">Conceptual Illustration · Not Measured Signal</span>
             </div>
 
             <div class="channel">
               <div class="channel-label">
-                <span>Sympathetic</span>
-                <span>Mobilization</span>
+                <span>Sympathetic · Mobilization</span>
+                <span id="sym-value">90 / 100 (illustrative)</span>
               </div>
               <div class="bar">
                 <div class="fill fill-sym"></div>
@@ -418,12 +467,20 @@
 
             <div class="channel">
               <div class="channel-label">
-                <span>Parasympathetic</span>
-                <span>Restoration</span>
+                <span>Parasympathetic · Restoration</span>
+                <span id="para-value">20 / 100 (illustrative)</span>
               </div>
               <div class="bar">
                 <div class="fill fill-para"></div>
               </div>
+            </div>
+
+            <div class="state-controls" role="group" aria-label="Select illustrative autonomic state">
+              <button type="button" class="state-btn" data-state-index="0" aria-pressed="true">Stress</button>
+              <button type="button" class="state-btn" data-state-index="1" aria-pressed="false">Calm focus</button>
+              <button type="button" class="state-btn" data-state-index="2" aria-pressed="false">Recovery</button>
+              <button type="button" class="state-btn" data-state-index="3" aria-pressed="false">Dysregulation</button>
+              <button type="button" class="state-btn" id="cycle-toggle" aria-pressed="false">Pause cycle</button>
             </div>
 
             <div class="note">
@@ -527,21 +584,23 @@
           <p class="observation">
             Autonomic regulation is a continuous balancing process influenced by internal rhythms, external inputs, and cognitive activity.
           </p>
-<<<<<<< HEAD
           <p class="footer-note">
-           This model describes regulation as a continuous adjustment, not a fixed state.
+            This model describes regulation as a continuous adjustment, not a fixed state. Values shown are conceptual educational illustrations, not measured physiology or clinical telemetry.
           </p>
-=======
->>>>>>> 2af671c (Refine regulation model states and remove repo note)
         </article>
       </div>
     </section>
   </main>
 
-    <script>
+  <script>
     (function () {
       const sym = document.querySelector(".fill-sym");
       const para = document.querySelector(".fill-para");
+      const stateLabel = document.getElementById("state-label");
+      const symValue = document.getElementById("sym-value");
+      const paraValue = document.getElementById("para-value");
+      const buttons = Array.from(document.querySelectorAll(".state-btn[data-state-index]"));
+      const cycleToggle = document.getElementById("cycle-toggle");
       if (!sym || !para) return;
 
       const states = [
@@ -552,17 +611,50 @@
       ];
 
       let i = 0;
+      const reducedMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      let paused = reducedMotion;
 
-      function applyState(state) {
+      function applyState(index) {
+        i = index;
+        const state = states[i];
         sym.style.width = state.sym + "%";
         para.style.width = state.para + "%";
+        if (stateLabel) stateLabel.textContent = state.label;
+        if (symValue) symValue.textContent = state.sym + " / 100 (illustrative)";
+        if (paraValue) paraValue.textContent = state.para + " / 100 (illustrative)";
+        buttons.forEach((btn, idx) => btn.setAttribute("aria-pressed", String(idx === i)));
       }
 
-      applyState(states[0]);
+      function syncCycleButton() {
+        if (!cycleToggle) return;
+        cycleToggle.textContent = paused ? "Resume cycle" : "Pause cycle";
+        cycleToggle.setAttribute("aria-pressed", String(paused));
+      }
+
+      buttons.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const idx = Number(btn.getAttribute("data-state-index"));
+          if (Number.isInteger(idx) && idx >= 0 && idx < states.length) {
+            paused = true;
+            applyState(idx);
+            syncCycleButton();
+          }
+        });
+      });
+
+      if (cycleToggle) {
+        cycleToggle.addEventListener("click", () => {
+          paused = !paused;
+          syncCycleButton();
+        });
+      }
+
+      applyState(0);
+      syncCycleButton();
 
       setInterval(() => {
-        i = (i + 1) % states.length;
-        applyState(states[i]);
+        if (paused) return;
+        applyState((i + 1) % states.length);
       }, 3000);
     })();
   </script>
